@@ -43,11 +43,11 @@ def wrap_displaymath(text: str, label: str, numbering: bool) -> str:
 
     #import pdb; pdb.set_trace()
 
-    # do not wrap eqnarray with anything
-    eqnarray_flag = False
+    # do not wrap when used with ('eqnarray', 'align')
+    nowrap_flag = False
     for part in parts:
-        if part.find('begin{eqnarray}') >= 0:
-            eqnarray_flag = True
+        if part.find('begin{eqnarray') >= 0 or part.find('begin{align') >= 0:
+            nowrap_flag = True
 
     if len(parts) == 0:
         return ''
@@ -58,7 +58,7 @@ def wrap_displaymath(text: str, label: str, numbering: bool) -> str:
         else:
             begin = r'\begin{equation*}' + labeldef
             end = r'\end{equation*}'
-        if eqnarray_flag:
+        if nowrap_flag:
             equations.append('%s\n' % parts[0])
         else:
             equations.append('\\begin{split}%s\\end{split}\n' % parts[0])
@@ -72,7 +72,7 @@ def wrap_displaymath(text: str, label: str, numbering: bool) -> str:
         for part in parts:
             equations.append('%s\\\\\n' % part.strip())
 
-    if eqnarray_flag:
+    if nowrap_flag:
         begin = r''
         end = r''
 
