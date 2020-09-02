@@ -77,12 +77,14 @@ class ReferencesResolver(SphinxPostTransform):
             refdoc = node.get('refdoc', self.env.docname)
             domain = None
 
+            #import pdb; pdb.set_trace()
             try:
                 if 'refdomain' in node and node['refdomain']:
                     # let the domain try to resolve the reference
                     try:
                         domain = self.env.domains[node['refdomain']]
                     except KeyError as exc:
+                        import pdb; pdb.set_trace()
                         raise NoUri(target, typ) from exc
                     newnode = domain.resolve_xref(self.env, refdoc, self.app.builder,
                                                   typ, target, node, contnode)
@@ -91,6 +93,7 @@ class ReferencesResolver(SphinxPostTransform):
                     newnode = self.resolve_anyref(refdoc, node, contnode)
                 # no new node found? try the missing-reference event
                 if newnode is None:
+                    #import pdb; pdb.set_trace()
                     newnode = self.app.emit_firstresult('missing-reference', self.env,
                                                         node, contnode,
                                                         allowed_exceptions=(NoUri,))
