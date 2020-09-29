@@ -43,11 +43,15 @@ def wrap_displaymath(text: str, label: str, numbering: bool) -> str:
 
     #import pdb; pdb.set_trace()
 
-    # do not wrap when used with ('eqnarray', 'align')
+    # do not wrap when used with ('align', 'eqnarray', 'equation')
     nowrap_flag = False
     for part in parts:
-        if part.find('begin{eqnarray') >= 0 or part.find('begin{align') >= 0:
-            nowrap_flag = True
+        #if part.find('Coriolis') >= 0:
+        #    import pdb; pdb.set_trace()
+        if part.find('begin{equation') >= 0 or \
+            part.find('begin{eqnarray') >= 0 or \
+            part.find('begin{align') >= 0:
+                nowrap_flag = True
 
     if len(parts) == 0:
         return ''
