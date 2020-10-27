@@ -17,6 +17,7 @@ import pdb
 import sys
 import traceback
 from typing import Any, IO, List
+from subprocess import check_output
 
 from docutils.utils import SystemMessage
 
@@ -278,6 +279,31 @@ def build_main(argv: List[str] = sys.argv[1:]) -> int:
                          warning, args.freshenv, args.warningiserror,
                          args.tags, args.verbosity, args.jobs, args.keep_going)
             app.build(args.force_all, filenames)
+
+            # Post process equations if requested
+            if os.environ.get('UPDATEHTMLEQS'):
+                ival = os.environ.get('UPDATEHTMLEQS')
+                ival = ival.strip()
+                if ival == 'Y':
+                    # Perform post processing of equations here
+                    print("Performing post processing of equations.")
+
+                    eqVerbose = ""
+                    if os.environ.get('UPDATEHTMLEQSVERBOSE'):
+                        eqVerbose = "-v"
+
+                    #@python3 ./postProcessEquations.py -d $(BUILDDIR) -p html -b sphinx -s index.html $(UPDATEHTMLEQSVERBOSE)
+                    builddir = os.sep.join(args.outputdir.split('/')[0:-1])
+                    projdir = args.outputdir.split('/')[-1]
+                    if builddir == projdir:
+                        projdir = "."
+                    if eqVerbose != "":
+                        cmd = ['python3','./postProcessEquations.py','-d',builddir,'-p',projdir,'-b','sphinx','-s','index.html',eqVerbose]
+                    else:
+                        cmd = ['python3','./postProcessEquations.py','-d',builddir,'-p',projdir,'-b','sphinx','-s','index.html']
+                    print('Running:',cmd)
+                    out = check_output(cmd)
+
             return app.statuscode
     except (Exception, KeyboardInterrupt) as exc:
         handle_exception(app, args, exc, error)
@@ -295,4 +321,9 @@ def main(argv: List[str] = sys.argv[1:]) -> int:
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))
+    ret = (main(sys.argv[1:]))
+
+
+
+    sys.exit(ret)
+    #sys.exit(main(sys.argv[1:]))
