@@ -295,6 +295,8 @@ class Documenter:
     def __init__(self, directive: "DocumenterBridge", name: str, indent: str = '') -> None:
         self.directive = directive
         self.env = directive.env    # type: BuildEnvironment
+        # RemovedInSphinx40Warning: Auto summary.genopt is deprecated
+        #import pdb; pdb.set_trace()
         self.options = directive.genopt
         self.name = name
         self.indent = indent
@@ -323,6 +325,8 @@ class Documenter:
 
     def add_line(self, line: str, source: str, *lineno: int) -> None:
         """Append one line of generated reST to the output."""
+        #RemovedInSphinx40Warning: Auto summary.result is deprecated
+        #import pdb; pdb.set_trace()
         if line.strip():  # not a blank line
             self.directive.result.append(self.indent + line, source, *lineno)
         else:

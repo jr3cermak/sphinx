@@ -498,6 +498,7 @@ def default_latex_documents(config: Config) -> List[Tuple[str, str, str, str, st
     """ Better default latex_documents settings. """
     project = texescape.escape(config.project, config.latex_engine)
     author = texescape.escape(config.author, config.latex_engine)
+    author = author.replace(', ', '\\and ').replace(' and ', '\\and and ')
     return [(config.master_doc,
              make_filename_from_project(config.project) + '.tex',
              texescape.escape_abbr(project),
