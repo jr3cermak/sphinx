@@ -40,6 +40,19 @@ def wrap_displaymath(text: str, label: str, numbering: bool) -> str:
 
     parts = list(filter(is_equation, text.split('\n\n')))
     equations = []
+
+    #import pdb; pdb.set_trace()
+
+    # do not wrap when used with ('align', 'eqnarray', 'equation')
+    nowrap_flag = False
+    for part in parts:
+        #if part.find('Coriolis') >= 0:
+        #    import pdb; pdb.set_trace()
+        if part.find('begin{equation') >= 0 or \
+            part.find('begin{eqnarray') >= 0 or \
+            part.find('begin{align') >= 0:
+                nowrap_flag = True
+
     if len(parts) == 0:
         return ''
     elif len(parts) == 1:
@@ -49,7 +62,10 @@ def wrap_displaymath(text: str, label: str, numbering: bool) -> str:
         else:
             begin = r'\begin{equation*}' + labeldef
             end = r'\end{equation*}'
-        equations.append('\\begin{split}%s\\end{split}\n' % parts[0])
+        if nowrap_flag:
+            equations.append('%s\n' % parts[0])
+        else:
+            equations.append('\\begin{split}%s\\end{split}\n' % parts[0])
     else:
         if numbering:
             begin = r'\begin{align}%s\!\begin{aligned}' % labeldef
@@ -59,5 +75,9 @@ def wrap_displaymath(text: str, label: str, numbering: bool) -> str:
             end = r'\end{aligned}\end{align*}'
         for part in parts:
             equations.append('%s\\\\\n' % part.strip())
+
+    if nowrap_flag:
+        begin = r''
+        end = r''
 
     return '%s\n%s%s' % (begin, ''.join(equations), end)
